@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -11,6 +12,9 @@ func main() {
 	addr := flag.String("addr", ":4000", "HTTP network address")
 	// read in the flag value & assign it to addr
 	flag.Parse()
+	// create a logger, additional infor flags are joined with the bitwise OR operator
+	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
 	mux := http.NewServeMux()
 
@@ -25,9 +29,8 @@ func main() {
 	mux.HandleFunc("/snippet/view", snippetView)
 	mux.HandleFunc("/snippet/create", snippetCreate)
 
-	// the value returned from flag.String() is a pointer to the flag value,
-	// so we need to dereference the pointer before using it.
-	log.Printf("Starting server on %s", *addr)
+	// write messages using the new loggers
+	infoLog.Printf("Starting server on %s", *addr)
 	err := http.ListenAndServe(*addr, mux)
-	log.Fatal(err)
+	errorLog.Fatal(err)
 }
