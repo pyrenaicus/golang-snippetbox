@@ -37,9 +37,9 @@ func main() {
 	// the request reaches the file server.
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
 	// register other app routes
-	mux.HandleFunc("/", home)
-	mux.HandleFunc("/snippet/view", snippetView)
-	mux.HandleFunc("/snippet/create", snippetCreate)
+	mux.HandleFunc("/", app.home)
+	mux.HandleFunc("/snippet/view", app.snippetView)
+	mux.HandleFunc("/snippet/create", app.snippetCreate)
 	// initialize a new http.Server struct
 	srv := &http.Server{
 		Addr:     *addr,
