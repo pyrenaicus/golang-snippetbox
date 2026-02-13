@@ -7,6 +7,12 @@ import (
 	"os"
 )
 
+// define an application struct to hold app-wide dependencies
+type application struct {
+	errorLog *log.Logger
+	infoLog  *log.Logger
+}
+
 func main() {
 	// define an "addr" command-line flag
 	addr := flag.String("addr", ":4000", "HTTP network address")
@@ -15,6 +21,12 @@ func main() {
 	// create a logger, additional infor flags are joined with the bitwise OR operator
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+
+	// init a new instance of application struct
+	app := &application{
+		errorLog: errorLog,
+		infoLog:  infoLog,
+	}
 
 	mux := http.NewServeMux()
 
