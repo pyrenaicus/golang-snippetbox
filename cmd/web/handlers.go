@@ -10,7 +10,7 @@ import (
 // change the signature of home handler so it is defined as a method against *application
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
-		http.NotFound(w, r)
+		app.notFound(w, r) // use notFound() helper
 		return
 	}
 
@@ -25,7 +25,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	// passing the slice as a variadic parameter
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
-		app.errorLog.Print(err.Error())
+		app.serverError(w, err) // user serverError() helper
 		http.Error(w, "Internal Server Error", 500)
 		return
 	}
@@ -33,7 +33,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	// write the template content as the response body
 	err = ts.ExecuteTemplate(w, "base", nil)
 	if err != nil {
-		app.errorLog.Print(err.Error())
+		app.serverError(w, err) // use serverError() helper
 		http.Error(w, "Internal server error", 500)
 	}
 }
@@ -41,7 +41,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil || id < 1 {
-		http.NotFound(w, r)
+		app.notfound(w) // use notFoud() helper
 		return
 	}
 
@@ -50,7 +50,7 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		app.clientError(w, http.StatusMethodNotAllowed) // use clientError() helper
 		return
 	}
 
