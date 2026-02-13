@@ -10,7 +10,7 @@ import (
 // change the signature of home handler so it is defined as a method against *application
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
-		app.notFound(w, r) // use notFound() helper
+		app.notFound(w) // use notFound() helper
 		return
 	}
 
@@ -41,7 +41,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil || id < 1 {
-		app.notfound(w) // use notFoud() helper
+		app.notFound(w) // use notFoud() helper
 		return
 	}
 
