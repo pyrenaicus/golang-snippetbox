@@ -7,12 +7,16 @@ import (
 	"net/http"
 	"os"
 
+	// import our models package
+	"snippetbox.cnoua.org/internal/models"
+
 	_ "github.com/go-sql-driver/mysql" // alias package name to the blank identifier
 )
 
 type application struct {
 	errorLog *log.Logger
 	infoLog  *log.Logger
+	snippets *models.SnippetModel
 }
 
 func main() {
@@ -33,9 +37,11 @@ func main() {
 	// defer a call to db.Close() so connection pool closes before main() exits
 	defer db.Close()
 
+	// initialize a models.SnippetModel instance and add it to the application dependencies
 	app := &application{
 		errorLog: errorLog,
 		infoLog:  infoLog,
+		snippets: &models.SnippetModel{DB: db},
 	}
 
 	srv := &http.Server{
