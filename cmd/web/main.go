@@ -1,10 +1,13 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
 	"log"
 	"net/http"
 	"os"
+
+	_ "github.com/go-sql-driver/mysql" // alias package name to the blank identifier
 )
 
 type application struct {
@@ -14,10 +17,21 @@ type application struct {
 
 func main() {
 	addr := flag.String("addr", ":4000", "HTTP network address")
+	// define a new flag for the MySQL DSN String
+	dsn := flag.String("dsn", "web:matrix@/snippetbox?parseTime=true", "MySQL data source name")
+
 	flag.Parse()
 
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+
+	// create a connection pool
+	db, err := openDB(*dsn)
+	if err != nil {
+		errorLog.Fatal(err)
+	}
+	// defer a call to db.Close() so connection pool closes before main() exits
+	defer db.Close()
 
 	app := &application{
 		errorLog: errorLog,
@@ -31,6 +45,18 @@ func main() {
 	}
 
 	infoLog.Printf("Starting server on %s", *addr)
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	errorLog.Fatal(err)
+}
+
+// openDB() wraps sql.Open() and returns a sql.DB connection pool for a given DSN
+func openDB(dsn string) (*sql.DB, error) {
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		return nil, err
+	}
+	if err = db.Ping(); err != nil {
+		return nil, err
+	}
+	return db, nil
 }
