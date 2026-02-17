@@ -2,8 +2,8 @@ package models
 
 import (
 	"database/sql"
-	"time"
 	"errors"
+	"time"
 )
 
 // define a snippet type to hold the data for an individual snippet. The fields of the struct
@@ -49,10 +49,10 @@ func (m *SnippetModel) Get(id int) (*Snippet, error) {
 	s := &Snippet{}
 	// use row.Scan() to copy the values from each field in sql.Row to the corresponding
 	// field in Snippet struct.
-	err := row.Scan(&s.ID, $s.Title, &s.Content, &s.Created, &s.Expires)
+	err := row.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
 	if err != nil {
-		// if query returns no rows, then row.Scan() will return a 
-		// sql.ErrNoRows error. We use errors.Is() fn to check and return 
+		// if query returns no rows, then row.Scan() will return a
+		// sql.ErrNoRows error. We use errors.Is() fn to check and return
 		// our ErrNoRecord error instead.
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, ErrNoRecord
