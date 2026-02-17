@@ -1,10 +1,13 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
+
+	"snippetbox.cnoua.org/internal/models"
 )
 
 // change the signature of home handler so it is defined as a method against *application
@@ -45,7 +48,19 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "Display a specific snippet with ID %d...", id)
+	// use the snippetModel Get method to retrieve the data for a specific ID, if no
+	// matching record found, return a 404 Not Found response
+	snippet, err := app.snippets.Get(id)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			app.notFound(w)
+		} else {
+			app.serverError(w, err)
+		}
+		return
+	}
+	// write the snippet data as a plain-text HTTP response body
+	fmt.Fprintf(w, "%+v", snippet)
 }
 
 func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
