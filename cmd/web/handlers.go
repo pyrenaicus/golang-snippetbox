@@ -23,32 +23,34 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, snippet := range snippets {
-		fmt.Fprintf(w, "%+v\n", snippet)
-	}
+	// for _, snippet := range snippets {
+	// 	fmt.Fprintf(w, "%+v\n", snippet)
+	// }
 
 	// init a slice containing path to files
-	// files := []string{
-	// 	"./ui/html/base.tmpl",
-	// 	"./ui/html/partials/nav.tmpl",
-	// 	"./ui/html/pages/home.tmpl",
-	// }
-	//
+	files := []string{
+		"./ui/html/base.tmpl",
+		"./ui/html/partials/nav.tmpl",
+		"./ui/html/pages/home.tmpl",
+	}
+
 	// read template file into a template set
 	// passing the slice as a variadic parameter
-	// ts, err := template.ParseFiles(files...)
-	// if err != nil {
-	// 	app.serverError(w, err) // user serverError() helper
-	// 	http.Error(w, "Internal Server Error", 500)
-	// 	return
-	// }
-	//
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		app.serverError(w, err) // user serverError() helper
+		return
+	}
+
+	// create an instance of a templateData struct holding the slice of snippets
+	data := &templateData{
+		Snippets: snippets,
+	}
 	// write the template content as the response body
-	// err = ts.ExecuteTemplate(w, "base", nil)
-	// if err != nil {
-	// 	app.serverError(w, err) // use serverError() helper
-	// 	http.Error(w, "Internal server error", 500)
-	// }
+	err = ts.ExecuteTemplate(w, "base", data)
+	if err != nil {
+		app.serverError(w, err) // use serverError() helper
+	}
 }
 
 func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
