@@ -2,8 +2,8 @@ package main
 
 import "net/http"
 
-// routes() returns a servemux containing our app routes
-func (app *application) routes() *http.ServeMux {
+// it returns a http.Handler instead of *http.ServeMux
+func (app *application) routes() http.Handler {
 	mux := http.NewServeMux()
 
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
@@ -13,5 +13,7 @@ func (app *application) routes() *http.ServeMux {
 	mux.HandleFunc("/snippet/view", app.snippetView)
 	mux.HandleFunc("/snippet/create", app.snippetCreate)
 
-	return mux
+	// pass the servemux as the 'next' parameter to the secureHandlers middleware.
+	// It returns a http.Handler
+	return secureHeaders(mux)
 }
