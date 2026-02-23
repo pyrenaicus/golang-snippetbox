@@ -13,7 +13,6 @@ func (app *application) routes() http.Handler {
 	mux.HandleFunc("/snippet/view", app.snippetView)
 	mux.HandleFunc("/snippet/create", app.snippetCreate)
 
-	// pass the servemux as the 'next' parameter to the secureHandlers middleware.
-	// It returns a http.Handler
-	return secureHeaders(mux)
+	// wrap the existing chain with the logRequest middleware
+	return app.logRequest(secureHeaders(mux))
 }
