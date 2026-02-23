@@ -21,6 +21,12 @@ func humanDate(t time.Time) string {
 	return t.Format("02 Jan 2006 at 15:04")
 }
 
+// initialize a template.FuncMap object & store it in a global variable. it acts as a
+// lookup table for our custom template functions
+var functions = template.FuncMap{
+	"humanDate": humanDate,
+}
+
 func newTemplateCache() (map[string]*template.Template, error) {
 	// initialize a new map to act as the cache
 	cache := map[string]*template.Template{}
