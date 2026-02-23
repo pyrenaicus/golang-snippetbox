@@ -40,8 +40,10 @@ func newTemplateCache() (map[string]*template.Template, error) {
 		// extract the file name from the full filepath
 		name := filepath.Base(page)
 
+		// use template.New() to create an empty template set, use the Funcs() method
+		// to register the template.FuncMap, and then
 		// parse the base template into a template set
-		ts, err := template.ParseFiles("./ui/html/base.tmpl")
+		ts, err := template.New(name).Funcs(functions).ParseFiles("./ui/html/base.tmpl")
 		if err != nil {
 			return nil, err
 		}
