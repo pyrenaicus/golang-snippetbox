@@ -12,6 +12,16 @@ import (
 	"snippetbox.cnoua.org/internal/models"
 )
 
+// struct to represent the form data & validation errors. All struct fields are
+// exported (start with a capital letter) in order to be read by the html/template
+// package when rendering the template
+type snippetCreateForm struct {
+	Title       string
+	Content     string
+	Expires     int
+	FieldErrors map[string]string
+}
+
 // change the signature of home handler so it is defined as a method against *application
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	snippets, err := app.snippets.Latest()
