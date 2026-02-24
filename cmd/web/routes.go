@@ -12,6 +12,10 @@ func (app *application) routes() http.Handler {
 	// initialize the router
 	router := httprouter.New()
 
+	// custom handler for 404 responses
+	router.NotFound = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		app.notFound(w)
+	})
 	// route for the static files
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
 	router.Handler(http.MethodGet, "/static/*filepath", http.StripPrefix("/static", fileServer))
