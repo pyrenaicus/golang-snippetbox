@@ -86,21 +86,10 @@ func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request) {
-	// call r.ParseForm() which adds any data in POST request body to
-	// r.PostForm map.
-	err := r.ParseForm()
-	if err != nil {
-		app.clientError(w, http.StatusBadRequest)
-		return
-	}
-
 	// declare an empty instance of snippetCreateForm struct
 	var form snippetCreateForm
 
-	// call Decode() method of the form decoder, passing in the current request
-	// and a pointer to snippetCreateForm struct. This will fill our struct with
-	// the relevant values from the HTML form.
-	err = app.formDecoder.Decode(&form, r.PostForm)
+	err := app.decodePostForm(r, &form)
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return
