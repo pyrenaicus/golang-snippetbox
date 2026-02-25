@@ -14,13 +14,15 @@ import (
 // struct to represent the form data & validation errors. All struct fields are
 // exported (start with a capital letter) in order to be read by the html/template
 // package when rendering the template.
-// Validator type is embedded, so our struct inherits all its fields & methods
-
+// Validator type is embedded, so our struct inherits all its fields & methods.
+// include struct tags which tell the decoder how to map HTML form values into
+// struct fields. The taf `form:"-"` tells the decoder to completely ignore a
+// field during decoding.
 type snippetCreateForm struct {
-	Title   string
-	Content string
-	Expires int
-	validator.Validator
+	Title               string `form:"title"`
+	Content             string `form:"content"`
+	Expires             int    `form:"expires"`
+	validator.Validator `form:"-"`
 }
 
 // change the signature of home handler so it is defined as a method against *application
@@ -92,22 +94,17 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// r.PostForm.Get() always return form data as a string, however we expect
-	// expires value to be an integer
-	expires, err := strconv.Atoi(r.PostForm.Get("expires"))
+	// declare an empty instance of snippetCreateForm struct
+	var form snippetCreateForm
+
+	// call Decode() method of the form decoder, passing in the current request
+	// and a pointer to snippetCreateForm struct. This will fill our struct with
+	// the relevant values from the HTML form.
+	err = app.formDecoder.Decode(&form, r.PostForm)
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return
 	}
-
-	// create an instance of snippetCreateForm struct containing the values
-	// from the form
-	form := snippetCreateForm{
-		Title:   r.PostForm.Get("title"),
-		Content: r.PostForm.Get("content"),
-		Expires: expires,
-	}
-
 	// execute validation checks
 	form.CheckField(validator.NotBlank(form.Title), "title", "This field cannot be blank")
 	form.CheckField(validator.MaxChars(form.Title, 100), "title", "This field cannot be more than 100 characters long")
