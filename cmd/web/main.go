@@ -11,6 +11,7 @@ import (
 	// import our models package
 	"snippetbox.cnoua.org/internal/models"
 
+	"github.com/go-playground/form/v4"
 	_ "github.com/go-sql-driver/mysql" // alias package name to the blank identifier
 )
 
@@ -19,6 +20,7 @@ type application struct {
 	infoLog       *log.Logger
 	snippets      *models.SnippetModel
 	templateCache map[string]*template.Template
+	formDecoder   *form.Decoder
 }
 
 func main() {
@@ -45,12 +47,16 @@ func main() {
 		errorLog.Fatal(err)
 	}
 
+	// initialize a decoder instance
+	formDecoder := form.NewDecoder()
+
 	// initialize a models.SnippetModel instance and add it to the application dependencies
 	app := &application{
 		errorLog:      errorLog,
 		infoLog:       infoLog,
 		snippets:      &models.SnippetModel{DB: db},
 		templateCache: templateCache,
+		formDecoder:   formDecoder,
 	}
 
 	srv := &http.Server{
