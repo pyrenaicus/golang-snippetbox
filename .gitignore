@@ -1,2 +1,5 @@
 /.DS_Store
 tls/
+/key.pem
+/cert.pem
+/key.pem
