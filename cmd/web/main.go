@@ -59,6 +59,8 @@ func main() {
 	sessionManager := scs.New()
 	sessionManager.Store = mysqlstore.New(db)
 	sessionManager.Lifetime = 12 * time.Hour
+	// cookie will only be sent over HTTPS
+	sessionManager.Cookie.Secure = true
 
 	// initialize a models.SnippetModel instance and add it to the application dependencies
 	app := &application{
@@ -77,7 +79,8 @@ func main() {
 	}
 
 	infoLog.Printf("Starting server on %s", *addr)
-	err = srv.ListenAndServe()
+	// start HTTPS server and pass TLS cert & private key
+	err = srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
 	errorLog.Fatal(err)
 }
 
