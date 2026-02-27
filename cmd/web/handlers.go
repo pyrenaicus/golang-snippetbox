@@ -209,7 +209,7 @@ func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 	form.CheckField(validator.NotBlank(form.Password), "password", "This field cannot be blank")
 
 	if !form.Valid() {
-	data:
+		data := app.newTemplateData(r)
 		app.newTemplateData(r)
 		data.Form = form
 		app.render(w, http.StatusUnprocessableEntity, "login.tmpl", data)
