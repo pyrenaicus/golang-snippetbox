@@ -159,8 +159,26 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// otherwise send the placeholder response for now
-	fmt.Fprintln(w, "Create a new user...")
+	// try to create a new user record in the db, if email already exists
+	// add an error message to the form and re-display it
+	err = app.users.Insert(form.Name, form.Email, form.Password)
+	if err != nil {
+		if errors.Is(err, models.ErrDuplicateEmail) {
+			form.AddFieldError("email", "Email address is already in use")
+
+			data := app.newTemplateData(r)
+			data.Form = form
+			app.render(w, http.StatusUnprocessableEntity, "signup.tmpl", data)
+		} else {
+			app.serverError(w, err)
+		}
+		return
+	}
+	// otherwise add a confirmation flash message to the session
+	app.sessionManager.Put(r.Context(), "flash", "Your signup was successful. Please log in.")
+
+	// redirect to login page
+	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
 
 func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {
