@@ -11,11 +11,12 @@ import (
 // define a templateData type to act as the holding structure for
 // any dynamic data passed to our html templates.
 type templateData struct {
-	CurrentYear int
-	Snippet     *models.Snippet
-	Snippets    []*models.Snippet
-	Form        any
-	Flash       string
+	CurrentYear     int
+	Snippet         *models.Snippet
+	Snippets        []*models.Snippet
+	Form            any
+	Flash           string
+	IsAuthenticated bool
 }
 
 // fn returns a formatted string of time.Time object
