@@ -22,7 +22,7 @@ func (app *application) routes() http.Handler {
 
 	// middleware chain containing the middleware specific to dynamic
 	// application routes. Unprotected routes use it.
-	dynamic := alice.New(app.sessionManager.LoadAndSave)
+	dynamic := alice.New(app.sessionManager.LoadAndSave, noSurf)
 
 	// update routes to use the new dynamic middleware chain followed by the
 	// appropriate handler fn. Note that because the alice ThenFunc() returns
