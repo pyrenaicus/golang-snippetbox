@@ -20,6 +20,9 @@ func (app *application) routes() http.Handler {
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
 	router.Handler(http.MethodGet, "/static/*filepath", http.StripPrefix("/static", fileServer))
 
+	// add a GET /ping route
+	router.HandlerFunc(http.MethodGet, "/ping", ping)
+
 	// middleware chain containing the middleware specific to dynamic
 	// application routes. Unprotected routes use it.
 	dynamic := alice.New(app.sessionManager.LoadAndSave, noSurf, app.authenticate)
